@@ -10,12 +10,23 @@ import * as url from 'url';
 
 const PORT = 3000;
 
+// HTML escape function to prevent XSS
+function escapeHtml(str = '') {
+  return str
+    .toString()
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
 const server = http.createServer((req, res) => {
   const parsedUrl = url.parse(req.url || '', true);
-  
+
   if (parsedUrl.pathname === '/auth/callback') {
     const { code, error } = parsedUrl.query;
-    
+
     if (error) {
       res.writeHead(400, { 'Content-Type': 'text/html' });
       res.end(`
@@ -23,14 +34,14 @@ const server = http.createServer((req, res) => {
           <head><title>Authentication Error</title></head>
           <body>
             <h1>Authentication Error</h1>
-            <p>Error: ${error}</p>
+            <p>Error: ${escapeHtml(error as string)}</p>
             <p>You can close this window and try again.</p>
           </body>
         </html>
       `);
       return;
     }
-    
+
     if (code) {
       res.writeHead(200, { 'Content-Type': 'text/html' });
       res.end(`
@@ -40,7 +51,7 @@ const server = http.createServer((req, res) => {
             <h1>Authentication Successful!</h1>
             <p>Copy this authorization code:</p>
             <div style="background: #f0f0f0; padding: 10px; border-radius: 5px; font-family: monospace; font-size: 14px; word-break: break-all; margin: 10px 0;">
-              ${code}
+              ${escapeHtml(code as string)}
             </div>
             <p>Use this code with the <code>oauth_complete</code> tool in your MCP server.</p>
             <p>You can close this window now.</p>
