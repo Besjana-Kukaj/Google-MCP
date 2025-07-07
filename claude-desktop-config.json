@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "google": {
+      "command": "node",
+      "args": ["YOUR PATH \\index.js"],
+      "env": {
+        "GOOGLE_APPLICATION_CREDENTIALS": "YOUR APPLICATION CREDENTIALS JSON"
+    }
+  }
+}
